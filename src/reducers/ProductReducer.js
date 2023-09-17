@@ -20,7 +20,7 @@ const initialState = {
   };
   
   const productReducer = (state = initialState, action) => {
-    // Handle actions here if needed
+    
     return state;
   };
   

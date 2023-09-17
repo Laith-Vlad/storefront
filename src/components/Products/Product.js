@@ -4,10 +4,11 @@ import { Typography, Card, CardContent, CardMedia, Grid, Container } from '@mui/
 
 const Products = ({ selectedCategory }) => {
   // Use useSelector to access the updated selectedCategory from the Redux store
-  const products = useSelector((state) => state.products);
+  const products = useSelector((state) => state);
 
   // Filter products based on the selected category
-  const filteredProducts = products.products.filter((product) => product.category === selectedCategory
+  console.log(products.products.products)
+  const filteredProducts = products.products.products.filter((product) => product.category === products.categories.activeCategory
   );
 
   return (
