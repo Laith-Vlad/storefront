@@ -1,7 +1,7 @@
 // categoryReducer.js
 const initialState = {
-    activeCategory: "Food",
-    categories: ['Food', 'Electronics', 'Games','Weaopons'],
+    activeCategory: "food",
+    categories: ['food', 'electronics', 'games','weapons'],
   };
   
   const categoryReducer = (state = initialState, action) => {

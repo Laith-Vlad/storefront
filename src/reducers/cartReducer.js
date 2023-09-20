@@ -1,42 +1,54 @@
 // cartReducer.js
 
 import { ADD_TO_CART, REMOVE_FROM_CART } from '../Actions/cartActions';
-
+import axios from "axios"
 const initialState = {
   cartItems: [],
+  loaded: false,
 };
 
 const cartReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case ADD_TO_CART:
-      const newItem = action.payload;
+    switch (action.type) {
+        case ADD_TO_CART:
+            console.log(action.payload,"jad3an king of consol");
+            const newItem = action.payload;
       // Check if the item is already in the cart
-      const existingItem = state.cartItems.find((item) => item.id === newItem.id);
+      console.log(state.cartItems ,"laith king of consol");
+      const existingItem = state.cartItems.find((item) => item.name === newItem.name);
 
-      if (existingItem) {
-        // If the item is already in the cart, increase the quantity
-        return {
-          ...state,
-          cartItems: state.cartItems.map((item) =>
-            item.id === newItem.id ? { ...item, quantity: item.quantity + 1 } : item
-          ),
-        };
+      if (!existingItem) {
+        axios
+          .put(`https://api-js401.herokuapp.com/api/v1/products/${action.payload._id}`, {
+            inStock: action.payload.inStock - 1,
+          })
+          .then((data) => {
+            console.log(data);
+          })
+          .catch((error) => {
+            console.error('Error updating product stock:', error);
+          });
+
+        return { ...state, cartItems: [...state.cartItems, action.payload] };
       } else {
-        // If the item is not in the cart, add it with a quantity of 1
-        return {
-          ...state,
-          cartItems: [...state.cartItems, { ...newItem, quantity: 1 }],
-        };
+        return { ...state, cartItems: [...state.cartItems] };
       }
+      
 
     case REMOVE_FROM_CART:
-      const productId = action.payload;
-      // Remove the item from the cart
-      const updatedCartItems = state.cartItems.filter((item) => item.id !== productId);
-      return {
-        ...state,
-        cartItems: updatedCartItems,
-      };
+        axios
+        .put(`https://api-js401.herokuapp.com/api/v1/products/${action.payload._id}`, {
+          inStock: action.payload.inStock,
+        })
+        .then((data) => {
+          console.log(data);
+        })
+        .catch((error) => {
+          console.error('Error resetting product stock:', error);
+        });
+
+      const removed = state.cartItems.filter((item) => item.name !== action.payload.name);
+
+      return { ...state, cartItems: removed };
 
     default:
       return state;

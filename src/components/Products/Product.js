@@ -1,9 +1,21 @@
-import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Typography, Card, CardContent, CardMedia, Grid, Container, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-
-// Import your Redux action to add products to the cart
-import { addToCartAction } from '../../Actions/cartActions'; // Replace with your actual import
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  Typography,
+  Card,
+  CardContent,
+  CardMedia,
+  Grid,
+  Container,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
+import axios from "axios";
+import { addToCartAction } from "../../Actions/cartActions";
+import { increment } from "../../Actions/CatagoryAction";
 
 const Products = ({ selectedCategory }) => {
   const dispatch = useDispatch();
@@ -11,8 +23,27 @@ const Products = ({ selectedCategory }) => {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
+  // Fetch data when the component mounts
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchData();
+  }, [products]);
+
+  const fetchData = () => {
+    axios
+      .get(`https://api-js401.herokuapp.com/api/v1/products`)
+      .then((data) => {
+        console.log("data", data.data.results);
+        dispatch(increment(data.data.results));
+        setLoading(false); // Data is received, set loading to false
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setLoading(false); // Handle errors and set loading to false
+      });
+  };
   const addToCart = (product) => {
-    // Dispatch an action to add the product to the cart
     dispatch(addToCartAction(product));
   };
 
@@ -25,8 +56,9 @@ const Products = ({ selectedCategory }) => {
     setDetailsOpen(false);
   };
 
-  // Filter products based on the selected category
-  const filteredProducts = products.products.products.filter((product) => product.category === products.categories.activeCategory);
+  const filteredProducts = products.products.products.filter(
+    (product) => product.category === products.categories.activeCategory
+  );
 
   return (
     <Container>
@@ -45,24 +77,42 @@ const Products = ({ selectedCategory }) => {
               />
               <CardContent>
                 <Typography variant="h6">{product.name}</Typography>
+                <Typography variant="h6">{product.inStock}</Typography>
                 <Typography variant="body2">{product.description}</Typography>
-                <Button variant="contained" color="primary" onClick={() => addToCart(product)}>Add to cart</Button>
-                <Button variant="outlined" color="primary" onClick={() => viewDetails(product)}>Details</Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    addToCart(product);
+                    setLoading(true);
+                  }}
+                >
+                  Add to cart
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => viewDetails(product)}
+                >
+                  Details
+                </Button>
               </CardContent>
             </Card>
           </Grid>
         ))}
       </Grid>
 
-      {/* Details Dialog */}
       <Dialog open={detailsOpen} onClose={handleCloseDetails}>
         {selectedProduct && (
           <>
             <DialogTitle>{selectedProduct.name}</DialogTitle>
             <DialogContent>
-              <Typography variant="body2">{selectedProduct.description}</Typography>
-              <Typography variant="body2">Price: {selectedProduct.price}</Typography>
-              {/* Add more product details here */}
+              <Typography variant="body2">
+                {selectedProduct.description}
+              </Typography>
+              <Typography variant="body2">
+                Price: {selectedProduct.price}
+              </Typography>
             </DialogContent>
             <DialogActions>
               <Button onClick={handleCloseDetails} color="primary">
