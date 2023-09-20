@@ -1,0 +1,14 @@
+/* Footer.module.scss */
+
+.footer {
+    background-color: $primary-main-color; // Replace with your primary color
+    color: #fff; // White text
+    position: sticky;
+    bottom: 0;
+  }
+  
+  .footer-toolbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px; // Adjust as needed
+  }
