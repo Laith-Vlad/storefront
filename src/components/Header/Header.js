@@ -1,25 +1,27 @@
-import React, { useState } from 'react';
-import { connect } from 'react-redux'; // Import connect from react-redux
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import Badge from '@mui/material/Badge';
-import Popover from '@mui/material/Popover';
-import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
-import DeleteIcon from '@mui/icons-material/Delete';
+import React, { useEffect, useState } from "react";
+import { connect } from "react-redux"; // Import connect from react-redux
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import Badge from "@mui/material/Badge";
+import Popover from "@mui/material/Popover";
+import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-import { removeFromCartAction } from '../../Actions/cartActions'; // Import the removeFromCartAction action creator
-
+import { removeFromCartAction } from "../../Actions/cartActions"; // Import the removeFromCartAction action creator
 function Header({ cartItems, removeFromCart }) {
+  const [reloadPage, setReloadPage] = useState(true); // State for page reloading
+  useEffect(() => {
+  }, [reloadPage]);
   const titleStyle = {
-    fontSize: '2rem',
-    color: 'white',
-    fontFamily: 'cursive',
+    fontSize: "2rem",
+    color: "white",
+    fontFamily: "cursive",
   };
 
   // State to manage the popover open/close
@@ -43,7 +45,7 @@ function Header({ cartItems, removeFromCart }) {
 
   return (
     <AppBar position="static">
-      <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
         <div>
           <Typography variant="h6" component="div" style={titleStyle}>
             Laith Store
@@ -60,20 +62,27 @@ function Header({ cartItems, removeFromCart }) {
             anchorEl={anchorEl}
             onClose={handleCartPopoverClose}
             anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right',
+              vertical: "bottom",
+              horizontal: "right",
             }}
             transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
+              vertical: "top",
+              horizontal: "right",
             }}
           >
             <List>
               {cartItems.map((item) => (
                 <ListItem key={item.id}>
-                  <ListItemText primary={item.name} secondary={`Quantity: ${item.quantity}`} />
+                  <ListItemText primary={item.name} secondary={`Quantity: 1`} />
                   <ListItemSecondaryAction>
-                    <IconButton edge="end" color="error" onClick={() => deleteCartItem(item.id)}>
+                    <IconButton
+                      edge="end"
+                      color="error"
+                      onClick={() => {
+                        deleteCartItem(item);
+                        setReloadPage(true);
+                      }}
+                    >
                       <DeleteIcon />
                     </IconButton>
                   </ListItemSecondaryAction>
@@ -99,4 +108,3 @@ const mapDispatchToProps = (dispatch) => ({
 
 // Connect the component to the Redux store
 export default connect(mapStateToProps, mapDispatchToProps)(Header);
-
